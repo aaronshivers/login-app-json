@@ -16,7 +16,7 @@ const users = [{
   password: 'Pass1234!' 
 }, {
   _id: new ObjectId(),
-  email: 'user3.example.com', // invalid email
+  email: 'user3!example.com', // invalid email
   password: 'Pass1234!' 
 }, {
   _id: new ObjectId(),

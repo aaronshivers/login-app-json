@@ -60,4 +60,23 @@ router.delete('/users/:id', (req, res) => {
   })
 })
 
+// PATCH /users/:id
+router.patch('/users/:id', (req, res) => {
+  const { id } = req.params
+  const update = { email, password } = req.body
+  const options = { new: true, runValidators: true }
+
+  if (validatePassword(password)) {
+    User.findByIdAndUpdate(id, update, options).then((user) => {
+      if (user) {
+        res.status(201).send(user)
+      } else {
+        res.status(404).send('Sorry, that user Id was not found in our database.')
+      }
+    }).catch(err => res.status(400).send(err.message))
+  } else {
+    res.status(400).send('Password must contain 8-100 characters, with at least one lowercase letter, one uppercase letter, one number, and one special character.')
+  }
+})
+
 module.exports = router

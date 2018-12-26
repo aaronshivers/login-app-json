@@ -34,8 +34,8 @@ describe('POST /users', () => {
         } else {
           User.findOne({email}).then((user) => {
             expect(user).toBeTruthy()
-            expect(user.email).toBe(email)
-            expect(user.password).not.toBe(password)
+            expect(user.email).toEqual(email)
+            expect(user.password).not.toEqual(password)
             done()
           }).catch(err => done(err))
         }
@@ -92,9 +92,9 @@ describe('GET /users/:id', () => {
       .get(`/users/${ _id }`)
       .expect(200)
       .expect((res) => {
-        expect(res.body._id).toBe(_id.toString())
-        expect(res.body.email).toBe(email)
-        expect(res.body.password).not.toBe(password)
+        expect(res.body._id).toEqual(_id.toString())
+        expect(res.body.email).toEqual(email)
+        expect(res.body.password).not.toEqual(password)
       })
       .end(done)
   })
@@ -118,7 +118,7 @@ describe('DELETE /users/:id', () => {
       .delete(`/users/${ _id }`)
       .expect(200)
       .expect((res) => {
-        expect(res.body._id).toBe(_id.toString())
+        expect(res.body._id).toEqual(_id.toString())
       })
       .end((err) => {
         if (err) {
@@ -134,7 +134,6 @@ describe('DELETE /users/:id', () => {
 
   it('should return 404 if the specified user is not found', (done) => {
     const { _id } = users[2]
-    console.log(`/users/${ _id }`)
     request(app)
       .delete(`/users/${ _id }`)
       .expect(404)
@@ -142,3 +141,84 @@ describe('DELETE /users/:id', () => {
   })
 })
 
+// PATCH /users
+describe('PATCH /users/:id', () => {
+  it('should update the specified user', (done) => {
+    const { _id } = users[0]
+    const { email, password } = users[2]
+
+    request(app)
+      .patch(`/users/${ _id }`)
+      .send({ email, password })
+      .expect(201)
+      .expect((res) => {
+        expect(res.body._id).toEqual(_id.toString())
+        expect(res.body.email).toEqual(email)
+      })
+      .end((err) => {
+        if (err) {
+          return done(err)
+        } else {
+          User.findById(_id).then((user) => {
+            expect(user).toBeTruthy()
+            expect(user._id).toEqual(_id)
+            expect(user.email).toEqual(email)
+            done()
+          }).catch(err => done(err))
+        }
+      })
+  })
+
+  it('should NOT create a duplicate user', (done) => {
+    const { _id } = users[0]
+    const { email, password } = users[1]
+
+    request(app)
+      .patch(`/users/${ _id }`)
+      .send({ email, password })
+      .expect(400)
+      .end((err) => {
+        if (err) {
+          return done(err)
+        } else {
+          User.findById(_id).then((user) => {
+            expect(user._id).toEqual(_id)
+            expect(user.email).not.toEqual(email)
+            done()
+          }).catch(err => done(err))
+        }
+      })
+  })
+
+  it('should NOT update a user with an invalid email', (done) => {
+    const { _id } = users[0]
+    const { email, password } = users[3]
+
+    request(app)
+      .patch(`/users/${ _id }`)
+      .send({ email, password })
+      .expect(400)
+      .end((err) => {
+        if (err) {
+          return done(err)
+        } else {
+          User.findById(_id).then((user) => {
+            expect(user._id).toEqual(_id)
+            expect(user.email).not.toEqual(email)
+            done()
+          }).catch(err => done(err))
+        }
+      })
+  })
+
+  it('should NOT create a user with an invalid password', (done) => {
+    const { _id } = users[0]
+    const { email, password } = users[4]
+
+    request(app)
+      .patch(`/users/${ _id }`)
+      .send({ email, password })
+      .expect(400)
+      .end(done)
+  })
+})
