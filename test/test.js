@@ -82,3 +82,28 @@ describe('GET /', () => {
   })
 })
 
+describe('GET /users/:id', () => {
+  it('should get the specified user', (done) => {
+    const { _id, email, password } = users[0]
+
+    request(app)
+      .get(`/users/${ _id }`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body._id).toBe(_id.toString())
+        expect(res.body.email).toBe(email)
+        expect(res.body.password).not.toBe(password)
+      })
+      .end(done)
+  })
+
+  it('should return 404 if user not found', (done) => {
+    const { _id } = users[2]
+
+    request(app)
+      .get(`/users/${ _id }`)
+      .expect(404)
+      .end(done)
+  })
+})
+

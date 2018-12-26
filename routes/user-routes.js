@@ -26,7 +26,24 @@ router.post('/users', (req, res) => {
 // GET /users
 router.get('/users', (req, res) => {
   User.find().then((users) => {
-    res.send(users)
+    if (users.length === 0) {
+      res.status(404).send('Sorry, the database must be empty.')
+    } else {
+      res.send(users)
+    }
+  })
+})
+
+// GET /users/:id
+router.get('/users/:id', (req, res) => {
+  const { id } = req.params
+
+  User.findById(id).then((user) => {
+    if (user) {
+      res.send(user)
+    } else {
+      res.status(404).send('Sorry, that user id is not in our database.')
+    }
   })
 })
 
