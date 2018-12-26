@@ -7,7 +7,7 @@ const { users, populateUsers } = require('./seed')
 beforeEach(populateUsers)
 
 // GET /
-describe('/GET /', () => {
+describe('GET /', () => {
   it('should respond with 200', (done) => {
     request(app)
       .get('/')
@@ -17,7 +17,7 @@ describe('/GET /', () => {
 })
 
 // POST /users
-describe('/POST /users', () => {
+describe('POST /users', () => {
   it('should create a new user', (done) => {
     const { email, password } = users[2]
     request(app)
@@ -58,3 +58,29 @@ describe('/POST /users', () => {
       .end(done)
   })
 })
+
+// GET /users
+// describe('GET /users', () => {
+//   it('should get all users', (done) => {
+//     request(app)
+//       .get('/')
+//       .expect(200)
+//       // .expect((res) => {
+//       //   expect(res.body.length).toBe(2)
+//       // })
+//       .end('done')
+//   })
+// })
+
+describe('GET /', () => {
+  it('should get all users', (done) => {
+    request(app)
+      .get('/users')
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.length).toBe(2)
+      })
+      .end(done)
+  })
+})
+
