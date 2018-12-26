@@ -2,6 +2,7 @@ const expect = require('expect')
 const request = require('supertest')
 
 const app = require('./../app')
+const User = require('../models/user-model')
 const { users, populateUsers } = require('./seed')
 
 beforeEach(populateUsers)
@@ -25,11 +26,20 @@ describe('POST /users', () => {
       .send({ email, password })
       .expect(201)
       .expect((res) => {
-        expect(res.body.email).toBe(email)
-        expect(res.body.password).not.toBe(password)
-        console.log(res.body.password, password)
+        expect(res.body._id).toBeTruthy()
       })
-      .end(done)
+      .end((err) => {
+        if (err) {
+          return done(err)
+        }
+
+        User.findOne({email}).then((user) => {
+          expect(user).toBeTruthy()
+          expect(user.email).toBe(email)
+          expect(user.password).not.toBe(password)
+          done()
+        }).catch(err => done(err))
+      })
   })
 
   it('should NOT create a duplicate user', (done) => {
