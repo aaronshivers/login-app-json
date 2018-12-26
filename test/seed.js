@@ -1,13 +1,13 @@
 const User = require('../models/user-model')
 
 const users = [{
-  email: 'user0@example.com',
-  password: 'pass1234' 
-}, {
-  email: 'user1@example.com',
+  email: 'user0@example.com', // always saved to database
   password: 'Pass1234!' 
 }, {
-  email: 'user2@example.com',
+  email: 'user1@example.com', // always saved to database
+  password: 'Pass1234!' 
+}, {
+  email: 'user2@example.com', // used for testing duplicate entries
   password: 'Pass1234!' 
 }, {
   email: 'user3.example.com', // invalid email
