@@ -21,6 +21,8 @@ const populateUsers = (done) => {
   User.deleteMany().then(() => {
     const user0 = new User(users[0]).save()
     const user1 = new User(users[1]).save()
+
+    return Promise.all([user0, user1])
   }).then(() => done())
 }
 

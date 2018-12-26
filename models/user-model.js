@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const validator = require('validator')
 
-// const hashPassword = require('../middleware/hash-password')
+const hashPassword = require('../middleware/hash-password')
 
 const Schema = mongoose.Schema
 
@@ -28,7 +28,7 @@ const userSchema = new Schema({
   }
 })
 
-// hashPassword(userSchema)
+hashPassword(userSchema)
 
 const User = mongoose.model('User', userSchema)
 

@@ -26,7 +26,8 @@ describe('POST /users', () => {
       .expect(201)
       .expect((res) => {
         expect(res.body.email).toBe(email)
-        expect(res.body.password).toBe(password)
+        expect(res.body.password).not.toBe(password)
+        console.log(res.body.password, password)
       })
       .end(done)
   })
@@ -58,19 +59,6 @@ describe('POST /users', () => {
       .end(done)
   })
 })
-
-// GET /users
-// describe('GET /users', () => {
-//   it('should get all users', (done) => {
-//     request(app)
-//       .get('/')
-//       .expect(200)
-//       // .expect((res) => {
-//       //   expect(res.body.length).toBe(2)
-//       // })
-//       .end('done')
-//   })
-// })
 
 describe('GET /', () => {
   it('should get all users', (done) => {
