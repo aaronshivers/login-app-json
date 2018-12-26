@@ -24,6 +24,10 @@ describe('/POST /users', () => {
       .post('/users')
       .send({ email, password })
       .expect(201)
+      .expect((res) => {
+        expect(res.body.email).toBe(email)
+        expect(res.body.password).toBe(password)
+      })
       .end(done)
   })
 
