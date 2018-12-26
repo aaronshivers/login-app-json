@@ -31,14 +31,14 @@ describe('POST /users', () => {
       .end((err) => {
         if (err) {
           return done(err)
+        } else {
+          User.findOne({email}).then((user) => {
+            expect(user).toBeTruthy()
+            expect(user.email).toBe(email)
+            expect(user.password).not.toBe(password)
+            done()
+          }).catch(err => done(err))
         }
-
-        User.findOne({email}).then((user) => {
-          expect(user).toBeTruthy()
-          expect(user.email).toBe(email)
-          expect(user.password).not.toBe(password)
-          done()
-        }).catch(err => done(err))
       })
   })
 
@@ -70,7 +70,8 @@ describe('POST /users', () => {
   })
 })
 
-describe('GET /', () => {
+// GET /users
+describe('GET /users', () => {
   it('should get all users', (done) => {
     request(app)
       .get('/users')
@@ -82,6 +83,7 @@ describe('GET /', () => {
   })
 })
 
+// GET /users/:id
 describe('GET /users/:id', () => {
   it('should get the specified user', (done) => {
     const { _id, email, password } = users[0]
@@ -102,6 +104,39 @@ describe('GET /users/:id', () => {
 
     request(app)
       .get(`/users/${ _id }`)
+      .expect(404)
+      .end(done)
+  })
+})
+
+// DELETE /users/:id
+describe('DELETE /users/:id', () => {
+  
+  it('should delete the specified user', (done) => {
+    const { _id } = users[0]
+    request(app)
+      .delete(`/users/${ _id }`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body._id).toBe(_id.toString())
+      })
+      .end((err) => {
+        if (err) {
+          return done(err)
+        } else {
+          User.findById(_id).then((user) => {
+            expect(user).toBeFalsy()
+            done()
+          }).catch(err => done(err))
+        }
+      })
+  })
+
+  it('should return 404 if the specified user is not found', (done) => {
+    const { _id } = users[2]
+    console.log(`/users/${ _id }`)
+    request(app)
+      .delete(`/users/${ _id }`)
       .expect(404)
       .end(done)
   })
