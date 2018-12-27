@@ -31,7 +31,7 @@ router.post('/users', (req, res) => {
 })
 
 // GET /users
-router.get('/users', (req, res) => {
+router.get('/users', authenticateUser, (req, res) => {
   User.find().then((users) => {
     if (users.length === 0) {
       res.status(404).send('Sorry, the database must be empty.')
@@ -42,7 +42,7 @@ router.get('/users', (req, res) => {
 })
 
 // GET /users/:id
-router.get('/users/:id', (req, res) => {
+router.get('/users/:id', authenticateUser, (req, res) => {
   const { id } = req.params
 
   User.findById(id).then((user) => {
@@ -55,7 +55,7 @@ router.get('/users/:id', (req, res) => {
 })
 
 // DELETE /users/:id
-router.delete('/users/:id', (req, res) => {
+router.delete('/users/:id', authenticateUser, (req, res) => {
   const { id } = req.params
 
   User.findByIdAndDelete(id).then((user) => {
@@ -68,7 +68,7 @@ router.delete('/users/:id', (req, res) => {
 })
 
 // PATCH /users/:id
-router.patch('/users/:id', (req, res) => {
+router.patch('/users/:id', authenticateUser, (req, res) => {
   const { id } = req.params
   const { email, password } = req.body
   const options = { new: true, runValidators: true }

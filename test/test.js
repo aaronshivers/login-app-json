@@ -9,6 +9,7 @@ beforeEach(populateUsers)
 
 // GET /
 describe('GET /', () => {
+
   it('should respond with 200', (done) => {
     request(app)
       .get('/')
@@ -19,8 +20,10 @@ describe('GET /', () => {
 
 // POST /users
 describe('POST /users', () => {
+
   it('should create a new user', (done) => {
     const { email, password } = users[2]
+
     request(app)
       .post('/users')
       .send({ email, password })
@@ -45,6 +48,7 @@ describe('POST /users', () => {
 
   it('should NOT create a duplicate user', (done) => {
     const { email, password } = users[0]
+
     request(app)
       .post('/users')
       .send({ email, password })
@@ -57,6 +61,7 @@ describe('POST /users', () => {
 
   it('should NOT create a user with an invalid email', (done) => {
     const { email, password } = users[3]
+
     request(app)
       .post('/users')
       .send({ email, password })
@@ -82,9 +87,13 @@ describe('POST /users', () => {
 
 // GET /users
 describe('GET /users', () => {
+
   it('should get all users', (done) => {
+    const cookie = `token=${tokens[0]}`
+
     request(app)
       .get('/users')
+      .set('Cookie', cookie)
       .expect(200)
       .expect((res) => {
         expect(res.body.length).toBe(2)
@@ -95,11 +104,14 @@ describe('GET /users', () => {
 
 // GET /users/:id
 describe('GET /users/:id', () => {
+
   it('should get the specified user', (done) => {
     const { _id, email, password } = users[0]
+    const cookie = `token=${tokens[0]}`
 
     request(app)
       .get(`/users/${ _id }`)
+      .set('Cookie', cookie)
       .expect(200)
       .expect((res) => {
         expect(res.body._id).toEqual(_id.toString())
@@ -111,9 +123,11 @@ describe('GET /users/:id', () => {
 
   it('should return 404 if user not found', (done) => {
     const { _id } = users[2]
+    const cookie = `token=${tokens[0]}`
 
     request(app)
       .get(`/users/${ _id }`)
+      .set('Cookie', cookie)
       .expect(404)
       .end(done)
   })
@@ -124,8 +138,11 @@ describe('DELETE /users/:id', () => {
   
   it('should delete the specified user', (done) => {
     const { _id } = users[0]
+    const cookie = `token=${tokens[0]}`
+
     request(app)
       .delete(`/users/${ _id }`)
+      .set('Cookie', cookie)
       .expect(200)
       .expect((res) => {
         expect(res.body._id).toEqual(_id.toString())
@@ -144,8 +161,11 @@ describe('DELETE /users/:id', () => {
 
   it('should return 404 if the specified user is not found', (done) => {
     const { _id } = users[2]
+    const cookie = `token=${tokens[0]}`
+
     request(app)
       .delete(`/users/${ _id }`)
+      .set('Cookie', cookie)
       .expect(404)
       .end(done)
   })
@@ -156,9 +176,11 @@ describe('PATCH /users/:id', () => {
   it('should update the specified user', (done) => {
     const { _id } = users[0]
     const { email, password } = users[2]
+    const cookie = `token=${tokens[0]}`
 
     request(app)
       .patch(`/users/${ _id }`)
+      .set('Cookie', cookie)
       .send({ email, password })
       .expect(201)
       .expect((res) => {
@@ -183,9 +205,11 @@ describe('PATCH /users/:id', () => {
   it('should NOT create a duplicate user', (done) => {
     const { _id } = users[0]
     const { email, password } = users[1]
+    const cookie = `token=${tokens[0]}`
 
     request(app)
       .patch(`/users/${ _id }`)
+      .set('Cookie', cookie)
       .send({ email, password })
       .expect(400)
       .end((err) => {
@@ -204,9 +228,11 @@ describe('PATCH /users/:id', () => {
   it('should NOT update a user with an invalid email', (done) => {
     const { _id } = users[0]
     const { email, password } = users[3]
+    const cookie = `token=${tokens[0]}`
 
     request(app)
       .patch(`/users/${ _id }`)
+      .set('Cookie', cookie)
       .send({ email, password })
       .expect(400)
       .end((err) => {
@@ -225,9 +251,11 @@ describe('PATCH /users/:id', () => {
   it('should NOT update a user with an invalid password', (done) => {
     const { _id } = users[0]
     const { email, password } = users[4]
+    const cookie = `token=${tokens[0]}`
 
     request(app)
       .patch(`/users/${ _id }`)
+      .set('Cookie', cookie)
       .send({ email, password })
       .expect(400)
       .end(done)
