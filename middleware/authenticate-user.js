@@ -7,7 +7,7 @@ const authenticateUser = (req, res, next) => {
   if (token) {
     jwt.verify(token, secret, (err, decoded) => {
       if (err) {
-        res.status(500).send(err.message)
+        res.status(401).send(err.message)
       } else {
         next()
       }

@@ -6,23 +6,23 @@ const createToken = require('../middleware/create-token')
 const users = [{
   _id: new ObjectId(),
   email: 'user0@example.com', // always saved to database
-  password: 'Pass1234!' 
+  password: 'Pass01234!' 
 }, {
   _id: new ObjectId(),
   email: 'user1@example.com', // always saved to database
-  password: 'Pass1234!' 
+  password: 'Pass11234!' 
 }, {
   _id: new ObjectId(),
   email: 'user2@example.com', // used for testing duplicate entries
-  password: 'Pass1234!' 
+  password: 'Pass21234!' 
 }, {
   _id: new ObjectId(),
   email: 'user3!example.com', // invalid email
-  password: 'Pass1234!' 
+  password: 'Pass31234!' 
 }, {
   _id: new ObjectId(),
   email: 'user4@example.com',
-  password: 'pass1234' // invalid password
+  password: 'pass41234' // invalid password
 }]
 
 const populateUsers = (done) => {

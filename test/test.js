@@ -251,4 +251,55 @@ describe('GET /profile', () => {
       .expect(401)
       .end(done)
   })
+
+  it('should respond with 401 if token is phony', (done) => {
+    const cookie = `token=${'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c'}`
+    request(app)
+      .get('/profile')
+      .set('Cookie', cookie)
+      .expect(401)
+      .end(done)
+  })
+})
+
+describe('POST /login', () => {
+  it('should login user and create a token', (done) => {
+    const { email, password } = users[0]
+    request(app)
+      .post('/login')
+      .send({ email, password })
+      .expect(200)
+      .expect((res) => {
+        expect(res.body._id).toBeTruthy()
+        expect(res.header['set-cookie']).toBeTruthy()
+      })
+      .end(done)
+  })
+
+  it('should NOT login user if email is not in the database', (done) => {
+    const { email, password } = users[2]
+    request(app)
+      .post('/login')
+      .send({ email, password })
+      .expect(404)
+      .expect((res) => {
+        expect(res.body._id).toBeFalsy()
+        expect(res.header['set-cookie']).toBeFalsy()
+      })
+      .end(done)
+  })
+
+  it('should NOT login user if password is incorrect', (done) => {
+    const { email } = users[0]
+    const { password } = users[2]
+    request(app)
+      .post('/login')
+      .send({ email, password })
+      .expect(401)
+      .expect((res) => {
+        expect(res.body._id).toBeFalsy()
+        expect(res.header['set-cookie']).toBeFalsy()
+      })
+      .end(done)
+  })
 })
