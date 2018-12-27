@@ -1,6 +1,7 @@
 const express =  require('express')
 const router = express.Router()
 const bcrypt = require('bcrypt')
+const _ = require('lodash')
 
 const User = require('../models/user-model')
 const validatePassword = require('../middleware/validate-password')
@@ -16,10 +17,10 @@ router.get('/', (req, res) => {
 
 // POST /users
 router.post('/users', (req, res) => {
-  const { email, password } = req.body
-  const user = new User({ email, password })
+  const body = _.pick(req.body, ['email', 'password'])
+  const user = new User(body)
 
-  if (validatePassword(password)) {
+  if (validatePassword(body.password)) {
     user.save().then((user) => {
       createToken(user).then((token) => {
         res.cookie('token', token, cookieExpiration).status(201).send(user)
@@ -70,13 +71,14 @@ router.delete('/users/:id', authenticateUser, (req, res) => {
 // PATCH /users/:id
 router.patch('/users/:id', authenticateUser, (req, res) => {
   const { id } = req.params
-  const { email, password } = req.body
+  const body = _.pick(req.body, ['email', 'password'])
   const options = { new: true, runValidators: true }
   const saltRounds = 10
   
-  if (validatePassword(password)) {
-    bcrypt.hash(password, saltRounds).then((hash) => {
-      User.findByIdAndUpdate(id, { email, password: hash }, options).then((user) => {
+  if (validatePassword(body.password)) {
+    bcrypt.hash(body.password, saltRounds).then((hash) => {
+
+      User.findByIdAndUpdate(id, { email: body.email, password: hash }, options).then((user) => {
         if (user) {
           res.status(201).send(user)
         } else {

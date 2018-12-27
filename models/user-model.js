@@ -27,6 +27,10 @@ const userSchema = new Schema({
     trim: true,
     minlength: 8,
     maxlength: 100
+  },
+  admin: {
+    type: Boolean,
+    required: false
   }
 })
 
