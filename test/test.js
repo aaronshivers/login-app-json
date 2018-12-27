@@ -27,6 +27,7 @@ describe('POST /users', () => {
       .expect(201)
       .expect((res) => {
         expect(res.body._id).toBeTruthy()
+        expect(res.header['set-cookie']).toBeTruthy()
       })
       .end((err) => {
         if (err) {
@@ -48,6 +49,9 @@ describe('POST /users', () => {
       .post('/users')
       .send({ email, password })
       .expect(400)
+      .expect((res) => {
+        expect(res.header['set-cookie']).toBeFalsy()
+      })
       .end(done)
   })
 
@@ -57,6 +61,9 @@ describe('POST /users', () => {
       .post('/users')
       .send({ email, password })
       .expect(400)
+      .expect((res) => {
+        expect(res.header['set-cookie']).toBeFalsy()
+      })
       .end(done)
   })
 
@@ -66,6 +73,9 @@ describe('POST /users', () => {
       .post('/users')
       .send({ email, password })
       .expect(400)
+      .expect((res) => {
+        expect(res.header['set-cookie']).toBeFalsy()
+      })
       .end(done)
   })
 })
@@ -220,6 +230,16 @@ describe('PATCH /users/:id', () => {
       .patch(`/users/${ _id }`)
       .send({ email, password })
       .expect(400)
+      .end(done)
+  })
+})
+
+// GET /profile
+describe('GET /profile', () => {
+  it('should respond with 200', (done) => {
+    request(app)
+      .get('/profile')
+      .expect(200)
       .end(done)
   })
 })

@@ -4,6 +4,10 @@ const bcrypt = require('bcrypt')
 
 const User = require('../models/user-model')
 const validatePassword = require('../middleware/validate-password')
+const createToken = require('../middleware/create-token')
+const authenticateUser = require('../middleware/authenticate-user')
+
+const cookieExpiration = { expires: new Date(Date.now() + 86400000) }
 
 // GET /
 router.get('/', (req, res) => {
@@ -17,7 +21,9 @@ router.post('/users', (req, res) => {
 
   if (validatePassword(password)) {
     user.save().then((user) => {
-      res.status(201).send(user)
+      createToken(user).then((token) => {
+        res.cookie('token', token, cookieExpiration).status(201).send(user)
+      }).catch(err => res.status(500).send(err.message))
     }).catch(err => res.status(400).send(err.message))
   } else {
     res.status(400).send('Password must contain 8-100 characters, with at least one lowercase letter, one uppercase letter, one number, and one special character.')
@@ -83,9 +89,9 @@ router.patch('/users/:id', (req, res) => {
   }
 })
 
-// GET /users/profile
-// router.get('/users/profile', (req, res) => {
-//   res.send('You are logged in.')
-// })
+// GET /profile
+router.get('/profile', (req, res) => {
+  res.send('You are logged in.')
+})
 
 module.exports = router
