@@ -331,3 +331,33 @@ describe('POST /login', () => {
       .end(done)
   })
 })
+
+// GET /admin
+describe('GET /admin', () => {
+  it('should respond 200 if user is admin', (done) => {
+    const cookie = `token=${tokens[0]}`
+
+    request(app)
+      .get('/admin')
+      .set('Cookie', cookie)
+      .expect(200)
+      .end(done)
+  })
+
+  it('should respond 401 if user is NOT admin', (done) => {
+    const cookie = `token=${tokens[1]}`
+
+    request(app)
+      .get('/admin')
+      .set('Cookie', cookie)
+      .expect(401)
+      .end(done)
+  })
+
+  it('should respond 401 if user is NOT logged in', (done) => {
+    request(app)
+      .get('/admin')
+      .expect(401)
+      .end(done)
+  })
+})

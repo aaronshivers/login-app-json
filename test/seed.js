@@ -6,7 +6,8 @@ const createToken = require('../middleware/create-token')
 const users = [{
   _id: new ObjectId(),
   email: 'user0@example.com', // always saved to database
-  password: 'Pass01234!' 
+  password: 'Pass01234!',
+  admin: true 
 }, {
   _id: new ObjectId(),
   email: 'user1@example.com', // always saved to database
@@ -37,6 +38,10 @@ const populateUsers = (done) => {
 const tokens = []
 
 createToken(users[0]).then((token) => {
+  tokens.push(token)
+})
+
+createToken(users[1]).then((token) => {
   tokens.push(token)
 })
 

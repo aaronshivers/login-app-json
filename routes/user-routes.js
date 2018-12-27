@@ -1,12 +1,12 @@
 const express =  require('express')
 const router = express.Router()
 const bcrypt = require('bcrypt')
-const _ = require('lodash')
 
 const User = require('../models/user-model')
 const validatePassword = require('../middleware/validate-password')
 const createToken = require('../middleware/create-token')
 const authenticateUser = require('../middleware/authenticate-user')
+const authenticateAdmin = require('../middleware/authenticate-admin')
 
 const cookieExpiration = { expires: new Date(Date.now() + 86400000) }
 
@@ -17,10 +17,12 @@ router.get('/', (req, res) => {
 
 // POST /users
 router.post('/users', (req, res) => {
-  const body = _.pick(req.body, ['email', 'password'])
-  const user = new User(body)
+  const email = req.body.email
+  const password = req.body.password
+  const newUser = { email, password }
+  const user = new User(newUser)
 
-  if (validatePassword(body.password)) {
+  if (validatePassword(newUser.password)) {
     user.save().then((user) => {
       createToken(user).then((token) => {
         res.cookie('token', token, cookieExpiration).status(201).send(user)
@@ -32,7 +34,7 @@ router.post('/users', (req, res) => {
 })
 
 // GET /users
-router.get('/users', authenticateUser, (req, res) => {
+router.get('/users', authenticateAdmin, (req, res) => {
   User.find().then((users) => {
     if (users.length === 0) {
       res.status(404).send('Sorry, the database must be empty.')
@@ -71,14 +73,16 @@ router.delete('/users/:id', authenticateUser, (req, res) => {
 // PATCH /users/:id
 router.patch('/users/:id', authenticateUser, (req, res) => {
   const { id } = req.params
-  const body = _.pick(req.body, ['email', 'password'])
+  const email = req.body.email
+  const password = req.body.password
+  const updatedUser = { email, password }
   const options = { new: true, runValidators: true }
   const saltRounds = 10
   
-  if (validatePassword(body.password)) {
-    bcrypt.hash(body.password, saltRounds).then((hash) => {
+  if (validatePassword(password)) {
+    bcrypt.hash(password, saltRounds).then((hash) => {
 
-      User.findByIdAndUpdate(id, { email: body.email, password: hash }, options).then((user) => {
+      User.findByIdAndUpdate(id, { email, password: hash }, options).then((user) => {
         if (user) {
           res.status(201).send(user)
         } else {
@@ -115,6 +119,11 @@ router.post('/login', (req, res) => {
       res.status(404).send('Sorry, we could not find that user in our database.')
     }
   }).catch(err => res.status(401).send('Please check your login credentials, and try again.'))
+})
+
+// GET /admin
+router.get('/admin', authenticateAdmin, (req, res) => {
+  res.send('If you can see this, you must be an admin.')
 })
 
 module.exports = router

@@ -30,7 +30,8 @@ const userSchema = new Schema({
   },
   admin: {
     type: Boolean,
-    required: false
+    required: false,
+    default: false
   }
 })
 

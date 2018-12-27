@@ -21,6 +21,7 @@
     "lodash": "^4.17.11",
     "mocha": "^5.2.0",
     "mongoose": "^5.4.0",
+    "remove": "^0.1.5",
     "supertest": "^3.3.0",
     "validator": "^10.10.0"
   }
