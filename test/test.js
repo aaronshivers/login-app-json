@@ -163,6 +163,7 @@ describe('PATCH /users/:id', () => {
             expect(user).toBeTruthy()
             expect(user._id).toEqual(_id)
             expect(user.email).toEqual(email)
+            expect(user.password).not.toEqual(password)
             done()
           }).catch(err => done(err))
         }
@@ -211,7 +212,7 @@ describe('PATCH /users/:id', () => {
       })
   })
 
-  it('should NOT create a user with an invalid password', (done) => {
+  it('should NOT update a user with an invalid password', (done) => {
     const { _id } = users[0]
     const { email, password } = users[4]
 

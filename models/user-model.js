@@ -1,5 +1,7 @@
 const mongoose = require('mongoose')
 const validator = require('validator')
+const bcrypt = require('bcrypt')
+const saltingRounds = 10
 
 const hashPassword = require('../middleware/hash-password')
 
