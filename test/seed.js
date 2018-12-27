@@ -1,6 +1,7 @@
 const { ObjectId } = require('mongodb')
 
 const User = require('../models/user-model')
+const createToken = require('../middleware/create-token')
 
 const users = [{
   _id: new ObjectId(),
@@ -33,8 +34,14 @@ const populateUsers = (done) => {
   }).then(() => done())
 }
 
+const tokens = []
+
+createToken(users[0]).then((token) => {
+  tokens.push(token)
+})
 
 module.exports = {
   users,
-  populateUsers
+  populateUsers,
+  tokens
 }

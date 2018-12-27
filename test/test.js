@@ -3,7 +3,7 @@ const request = require('supertest')
 
 const app = require('./../app')
 const User = require('../models/user-model')
-const { users, populateUsers } = require('./seed')
+const { users, populateUsers, tokens } = require('./seed')
 
 beforeEach(populateUsers)
 
@@ -236,10 +236,19 @@ describe('PATCH /users/:id', () => {
 
 // GET /profile
 describe('GET /profile', () => {
-  it('should respond with 200', (done) => {
+  it('should respond with 200 if user is logged in', (done) => {
+    const cookie = `token=${tokens[0]}`
     request(app)
       .get('/profile')
+      .set('Cookie', cookie)
       .expect(200)
+      .end(done)
+  })
+
+  it('should respond with 401 if user is NOT logged in', (done) => {
+    request(app)
+      .get('/profile')
+      .expect(401)
       .end(done)
   })
 })

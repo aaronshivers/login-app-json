@@ -90,7 +90,7 @@ router.patch('/users/:id', (req, res) => {
 })
 
 // GET /profile
-router.get('/profile', (req, res) => {
+router.get('/profile', authenticateUser, (req, res) => {
   res.send('You are logged in.')
 })
 
