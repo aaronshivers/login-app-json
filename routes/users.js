@@ -2,7 +2,7 @@ const express =  require('express')
 const router = express.Router()
 const bcrypt = require('bcrypt')
 
-const User = require('../models/user-model')
+const User = require('../models/users')
 const validate = require('../middleware/validate')
 const userValidator = require('../middleware/userValidator')
 const validatePassword = require('../middleware/validate-password')

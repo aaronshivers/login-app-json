@@ -2,12 +2,7 @@ const expect = require('expect')
 const request = require('supertest')
 
 const server = require('./../app')
-const User = require('../models/user-model')
-// const { users, populateUsers, tokens } = require('./seed')
-// const populateFaker = require('./faker.js')
-
-// beforeEach(populateUsers)
-// afterEach(populateFaker)
+const User = require('../models/users')
 
 // POST /users
 describe('POST /users', () => {
