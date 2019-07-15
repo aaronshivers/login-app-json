@@ -47,17 +47,6 @@ router.post('/users', validate(userValidator), async (req, res) => {
     // send error message
     res.status(400).json(error.message)
   }
-
-
-  // if (validatePassword(password)) {
-  //   user.save().then((user) => {
-  //     createToken(user).then((token) => {
-  //       res.cookie('token', token, cookieExpiration).status(201).send(user)
-  //     }).catch(err => res.status(500).send(err.message))
-  //   }).catch(err => res.status(400).send(err.message))
-  // } else {
-  //   res.status(400).send('Password must contain 8-100 characters, with at least one lowercase letter, one uppercase letter, one number, and one special character.')
-  // }
 })
 
 // GET /users
