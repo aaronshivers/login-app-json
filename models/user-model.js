@@ -15,11 +15,7 @@ const userSchema = new Schema({
     lowercase: true,
     trim: true,
     minlength: 8,
-    maxlength: 100,
-    validate: {
-      validator: validator.isEmail,
-      message: `{VALUE} is not a valid email address.`
-    }
+    maxlength: 100
   },
   password: {
     type: String,
@@ -28,10 +24,14 @@ const userSchema = new Schema({
     minlength: 8,
     maxlength: 100
   },
-  admin: {
+  isAdmin: {
     type: Boolean,
     required: false,
     default: false
+  },
+  isAwesome: {
+    type: Boolean,
+    default: true
   }
 })
 

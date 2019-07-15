@@ -8,12 +8,14 @@ const helmet = require('helmet')
 const app = express()
 const port = process.env.PORT
 
-const userRoutes = require('./routes/user-routes')
+const indexRoutes = require('./routes/index')
+const userRoutes = require('./routes/users')
 
 app.use(helmet())
 app.use(express.json())
 app.use(cookieParser())
 
+app.use(indexRoutes)
 app.use(userRoutes)
 
 app.use((req, res, next) => {
@@ -24,6 +26,6 @@ app.use((err, req, res, next) => {
   res.status(500).send(err.message)
 })
 
-app.listen(port)
+const server = app.listen(port, () => console.log(`Server running on port ${ port }.`))
 
-module.exports = app
+module.exports = server

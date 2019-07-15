@@ -3,26 +3,41 @@
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
+  "directories": {
+    "test": "tests"
+  },
+  "dependencies": {
+    "@hapi/joi": "^15.1.0",
+    "bcrypt": "^3.0.6",
+    "cookie-parser": "^1.4.4",
+    "dotenv": "^8.0.0",
+    "express": "^4.17.1",
+    "helmet": "^3.18.0",
+    "jsonwebtoken": "^8.5.1",
+    "lodash": "^4.17.14",
+    "mongoose": "^5.6.4",
+    "validator": "^11.1.0"
+  },
+  "devDependencies": {
+    "cross-env": "^5.2.0",
+    "expect": "^24.8.0",
+    "faker": "^4.1.0",
+    "mocha": "^6.1.4",
+    "supertest": "^4.0.2"
+  },
   "scripts": {
     "start": "node app.js",
-    "test": "mocha -t 50000 test/test.js"
+    "test": "export NODE_ENV=test || SET \"NODE_ENV=test\" && mocha -t 5000 tests/**/*.test.js",
+    "test-watch": "nodemon --exec \"npm test\""
   },
-  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aaronshivers/login-app-json.git"
+  },
   "author": "aaron shivers",
-  "license": "GPL-3.0-or-later",
-  "dependencies": {
-    "bcrypt": "^3.0.3",
-    "cookie-parser": "^1.4.3",
-    "dotenv": "^6.2.0",
-    "expect": "^23.6.0",
-    "express": "^4.16.4",
-    "helmet": "^3.15.0",
-    "jsonwebtoken": "^8.4.0",
-    "lodash": "^4.17.11",
-    "mocha": "^5.2.0",
-    "mongoose": "^5.4.0",
-    "remove": "^0.1.5",
-    "supertest": "^3.3.0",
-    "validator": "^10.10.0"
-  }
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/aaronshivers/login-app-json/issues"
+  },
+  "homepage": "https://github.com/aaronshivers/login-app-json#readme"
 }
