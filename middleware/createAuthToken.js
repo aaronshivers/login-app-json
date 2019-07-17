@@ -1,14 +1,16 @@
 const jwt = require('jsonwebtoken')
 
-module.exports = ({ _id, isAdmin, isAwesome }) => {
-  const payload = { _id, isAdmin, isAwesome }
-  const secret = process.env.JWT_SECRET
+module.exports = async ({ _id, isAdmin, isAwesome }) => {
 
-  return new Promise((resolve, reject) => {
-    jwt.sign(payload, secret, (err, token) => {
-      if (err) return reject(err)
+  try {
+    
+    const payload = { _id, isAdmin, isAwesome }
+    const secret = process.env.JWT_SECRET
+    
+    return await jwt.sign(payload, secret)
 
-      return resolve(token)
-    })
-  })
+  } catch (error) {
+
+    return error.message
+  }
 }

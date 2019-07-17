@@ -44,12 +44,7 @@ describe('/users', () => {
   }
 
   beforeEach(async () => {
-    // populateUsers
-    // cookies = []
-
-    // createTokens(users)
     return tokens = await createTokens(await populateUsers())
-    // await cookies.push(`token=${ token }`)
   })
 
   // POST /users
