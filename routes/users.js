@@ -8,7 +8,7 @@ const userValidator = require('../middleware/userValidator')
 const validatePassword = require('../middleware/validate-password')
 const createAuthToken = require('../middleware/createAuthToken')
 const authenticateUser = require('../middleware/authenticate-user')
-const authenticateAdmin = require('../middleware/authenticate-admin')
+const auth = require('../middleware/auth')
 
 const cookieExpiration = { expires: new Date(Date.now() + 86400000) }
 
@@ -50,14 +50,24 @@ router.post('/users', validate(userValidator), async (req, res) => {
 })
 
 // GET /users
-router.get('/users', authenticateAdmin, (req, res) => {
-  User.find().then((users) => {
-    if (users.length === 0) {
-      res.status(404).send('Sorry, the database must be empty.')
-    } else {
-      res.send(users)
-    }
-  })
+router.get('/users', auth, async (req, res) => {
+
+  try {
+
+    // verify isAdmin === true
+    if (!req.user.isAdmin) return res.status(401).render({ error: 'Access Denied! Admin Only!' })
+
+    // find users
+    const users = await User.find()
+
+    // return users
+    res.json(users)
+
+  } catch (error) {
+
+    // send error message
+    res.json({ error: error.message })
+  }
 })
 
 // GET /users/:id
@@ -124,7 +134,7 @@ router.post('/login', (req, res) => {
     if (user) {
       bcrypt.compare(password, user.password, (err, hash) => {
         if (hash) {
-          createToken(user).then((token) => {
+          createAuthToken(user).then((token) => {
             res.cookie('token', token, cookieExpiration).status(200).send(user)
           })
         } else {
@@ -138,7 +148,7 @@ router.post('/login', (req, res) => {
 })
 
 // GET /admin
-router.get('/admin', authenticateAdmin, (req, res) => {
+router.get('/admin', auth, (req, res) => {
   res.send('If you can see this, you must be an admin.')
 })
 

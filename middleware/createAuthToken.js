@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken')
 
-module.exports = user => {
-  const payload = { _id: user._id, admin: user.admin, isAwesome: user.isAwesome }
+module.exports = ({ _id, isAdmin, isAwesome }) => {
+  const payload = { _id, isAdmin, isAwesome }
   const secret = process.env.JWT_SECRET
 
   return new Promise((resolve, reject) => {

@@ -3,40 +3,64 @@ const request = require('supertest')
 
 const server = require('./../app')
 const User = require('../models/users')
+const createAuthToken = require('../middleware/createAuthToken')
 
-// POST /users
-describe('POST /users', () => {
+describe('/users', () => {
 
-  describe('if no data is provided', () => {
+  // test users
+  const users = [{
+    email: 'user0@test.net',
+    password: 'asdfASDF1234!@#$'
+  }, {
+    email: 'user1@test.net',
+    password: 'asdfASDF1234!@#$',
+    isAdmin: true
+  }]
 
-    it('should respond 400', async () => {
+  // add test users to the database
+  const populateUsers = async () => {
 
-      await request(server)
-        .post('/users')
-        .expect(400)
-    })
+    // delete all users
+    await User.deleteMany()
 
-    it('should not set a cookie', async () => {
+    // create and save users
+    const user0 = await new User(users[0]).save()
+    const user1 = await new User(users[1]).save()
 
-      await request(server)
-        .post('/users')
-        .expect((res) => {
-          expect(res.header['set-cookie']).toBeFalsy()
-        })
-    })
+    return Promise.all([user0, user1])
+  }
+
+  // create authentication tokens
+  const createTokens = async ([user0, user1]) => {
+
+    // clear tokens
+    tokens = []
+
+    // create tokens
+    const token0 = await createAuthToken(user0)
+    const token1 = await createAuthToken(user1)
+
+    return Promise.all([token0, token1])
+  }
+
+  beforeEach(async () => {
+    // populateUsers
+    // cookies = []
+
+    // createTokens(users)
+    return tokens = await createTokens(await populateUsers())
+    // await cookies.push(`token=${ token }`)
   })
 
-  describe('if data is provided', () => {
+  // POST /users
+  describe('POST /users', () => {
 
-    describe('and `email` is invalid', async () => {
-
-      const user = { email: 'asdf', password: 'asdfASDF1234!@#$' }
+    describe('if no data is provided', () => {
 
       it('should respond 400', async () => {
 
         await request(server)
           .post('/users')
-          .send(user)
           .expect(400)
       })
 
@@ -44,52 +68,21 @@ describe('POST /users', () => {
 
         await request(server)
           .post('/users')
-          .send(user)
           .expect((res) => {
             expect(res.header['set-cookie']).toBeFalsy()
           })
       })
     })
 
-    describe('and `password` is invalid', async () => {
+    describe('if data is provided', () => {
 
-      const user = { email: 'test@email.net', password: 1234 }
-
-      it('should respond 400', async () => {
-
-        await request(server)
-          .post('/users')
-          .send(user)
-          .expect(400)
-      })
-
-      it('should not set a cookie', async () => {
-
-        await request(server)
-          .post('/users')
-          .send(user)
-          .expect((res) => {
-            expect(res.header['set-cookie']).toBeFalsy()
-          })
-      })
-    })
-
-    describe('and all data is valid', () => {
-
-      const user = { email: 'test@user.net', password: 'asdfASDF1234!@#$' }
-
-      beforeEach(async () => {
-        await User.deleteMany()
-        await new User(user).save()
-      })
-
-      describe('and the `email` is already in the database', () => {
+      describe('and `email` is invalid', async () => {
 
         it('should respond 400', async () => {
 
           await request(server)
             .post('/users')
-            .send(user)
+            .send(users[0])
             .expect(400)
         })
 
@@ -97,77 +90,156 @@ describe('POST /users', () => {
 
           await request(server)
             .post('/users')
-            .send(user)
+            .send(users[0])
             .expect((res) => {
               expect(res.header['set-cookie']).toBeFalsy()
             })
         })
       })
 
-      describe('and the `email` is not in the database', () => {
+      describe('and `password` is invalid', async () => {
 
-        beforeEach(async () => await User.deleteMany())
-
-        it('should respond 201', async () => {
+        it('should respond 400', async () => {
 
           await request(server)
             .post('/users')
-            .send(user)
-            .expect(201)
+            .send(users[0])
+            .expect(400)
         })
 
-        it('should set a cookie', async () => {
+        it('should not set a cookie', async () => {
 
           await request(server)
             .post('/users')
-            .send(user)
+            .send(users[0])
             .expect((res) => {
-              expect(res.header['set-cookie']).toBeTruthy()
+              expect(res.header['set-cookie']).toBeFalsy()
             })
         })
+      })
 
-        it('should return the user id', async () => {
+      describe('and all data is valid', () => {
 
-          await request(server)
-            .post('/users')
-            .send(user)
-            .expect((res) => {
-              expect(res.body._id).toBeTruthy()
-            })
+        describe('and the `email` is already in the database', () => {
+
+          it('should respond 400', async () => {
+
+            await request(server)
+              .post('/users')
+              .send(users[0])
+              .expect(400)
+          })
+
+          it('should not set a cookie', async () => {
+
+            await request(server)
+              .post('/users')
+              .send(users[0])
+              .expect((res) => {
+                expect(res.header['set-cookie']).toBeFalsy()
+              })
+          })
         })
 
-        it('should save the user in the database', async () => {
+        describe('and the `email` is not in the database', () => {
+
+          beforeEach(async () => await User.deleteMany())
+
+          it('should respond 201', async () => {
+
+            await request(server)
+              .post('/users')
+              .send(users[0])
+              .expect(201)
+          })
+
+          it('should set a cookie', async () => {
+
+            await request(server)
+              .post('/users')
+              .send(users[0])
+              .expect((res) => {
+                expect(res.header['set-cookie']).toBeTruthy()
+              })
+          })
+
+          it('should return the user id', async () => {
+
+            await request(server)
+              .post('/users')
+              .send(users[0])
+              .expect((res) => {
+                expect(res.body._id).toBeTruthy()
+              })
+          })
+
+          it('should save the user in the database', async () => {
+
+            await request(server)
+              .post('/users')
+              .send(users[0])
+
+            const foundUser = await User.findOne({ email: users[0].email })
+            expect(foundUser).toBeTruthy()
+            expect(foundUser.email).toEqual(users[0].email)
+            expect(foundUser.password).not.toEqual(users[0].password)
+          })
+        })
+      })
+    })
+  })
+
+  // GET /users
+  describe('GET /users', () => {
+
+    describe('if no `token` is provided', () => {
+
+      it('should respond 401', async () => {
+
+        await request(server)
+          .get('/users')
+          .expect(401)
+      })
+    })
+
+    describe('if a `token` is provided', () => {
+
+      describe('and user is not an `admin`', async () => {
+
+        it('should respond 401', async () => {
 
           await request(server)
-            .post('/users')
-            .send(user)
+            .get('/users')
+            .set('Cookie', `token=${ tokens[0] }`)
+            .expect(401)
+        })
+      })
 
-          const foundUser = await User.findOne({ email: user.email })
-          expect(foundUser).toBeTruthy()
-          expect(foundUser.email).toEqual(user.email)
-          expect(foundUser.password).not.toEqual(user.password)
+      describe('and user is an `admin`', async () => {
+
+        it('should respond 200', async () => {
+
+          await request(server)
+            .get('/users')
+            .set('Cookie', `token=${ tokens[1] }`)
+            .expect(200)
+        })
+
+        it('should return all users', async () => {
+
+          await request(server)
+            .get('/users')
+            .set('Cookie', `token=${ tokens[1] }`)
+            .expect(200)
+            .expect(res => {
+              expect(res.body.length).toBe(2)
+            })
         })
       })
     })
   })
 })
 
-// GET /users
-// describe('GET /users', () => {
-
-//   it('should get all users', (done) => {
-//     const cookie = `token=${tokens[0]}`
-
-//     request(server)
-//       .get('/users')
-//       .set('Cookie', cookie)
-//       .expect(200)
-//       .expect((res) => {
-//         expect(res.body.length).toBe(2)
-//       })
-//       .end(done)
-//   })
-// })
 
 // // GET /users/:id
 // describe('GET /users/:id', () => {
